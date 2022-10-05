@@ -45,21 +45,48 @@ async function run() {
     const data = req.body;
     const email=data.email;
     const password=data.password;
-    console.log(data)
+    // console.log(data)
     const checkUser = await reviewCollection.findOne({
-      password : password,
-    });
-    const checkPassword = await reviewCollection.findOne({
       email: email,
     });
-    if (checkUser && checkPassword) {
+    if (checkUser.password===password &&checkUser.email===email) {
       res.send({acknowledged:true});
     }
     else{
-        // const result = await reviewCollection.insertOne(addUser);
         res.send({acknowledged:false});
     }})
   
+    //Reset user Name and password 
+
+    app.post("/reset",async(req,res)=>{
+      const data = req.body;
+      const email=data.email;
+      const password=data.password;
+      const newPassword=data.newPassword;
+      const checkUser = await reviewCollection.findOne({
+        email: email,
+      });
+console.log(checkUser.password===password ,checkUser.email===email)
+      console.log(email)
+      if ( checkUser.password===password &&checkUser.email===email) {
+        const filter = { email: email };
+        const options = { upsert: true };
+        const updateDoc = {
+
+          $set:{
+            password:newPassword,
+            name:data.name,
+          }
+        };
+        const result = await reviewCollection.updateOne(filter, updateDoc, options);
+        res.send({acknowledged:true});
+      }
+      else{
+          res.send({acknowledged:false});
+      }})
+
+
+
   
   } finally {
 
