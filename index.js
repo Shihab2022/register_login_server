@@ -118,7 +118,13 @@ async function run() {
         options
       );
       res.send(result);
-      // res.send(email,userInfo)
+    });
+    // delete user
+    app.delete("/user/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const cursor = await usersCollection.deleteOne(filter);
+      res.send(cursor);
     });
   } finally {
   }
