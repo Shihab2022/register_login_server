@@ -15,12 +15,14 @@ async function run() {
   try {
     await client.connect();
     const reviewCollection = client.db("register_login").collection("review");
+    const usersCollection = client.db("register_login").collection("users");
 
     app.get("/ok", async (req, res) => {
       const result = await reviewCollection.find({}).toArray();
-      console.log('result')
+      // console.log('result')
       res.send(result);
     });
+
   
   
   // if user register then again user can not register again 
@@ -66,8 +68,8 @@ async function run() {
       const checkUser = await reviewCollection.findOne({
         email: email,
       });
-console.log(checkUser.password===password ,checkUser.email===email)
-      console.log(email)
+// console.log(checkUser.password===password ,checkUser.email===email)
+//       console.log(email)
       if ( checkUser.password===password &&checkUser.email===email) {
         const filter = { email: email };
         const options = { upsert: true };
@@ -86,6 +88,19 @@ console.log(checkUser.password===password ,checkUser.email===email)
       }})
 
 
+
+// for user add and update 
+app.get("/users", async (req, res) => {
+  const result = await usersCollection.find({}).toArray();
+  // console.log('result')
+  res.send(result);
+});
+app.post("/addUser",async(req,res)=>{
+  const addUser = req.body;
+  // console.log(addUser)
+      const result = await usersCollection.insertOne(addUser);
+      res.send(result);
+ })
 
   
   } finally {
